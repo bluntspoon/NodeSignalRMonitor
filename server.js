@@ -21,7 +21,7 @@ var http = require('http');
 //var signalR = require('signalr-client');
 var signalR = require('./signalr.js');
 var client  = new signalR.client(
-	"http://localhost:8080/signalR",  //signalR service URL
+	"https://mppgs1mobile.valueactive.eu/pokerBabelFish",  //signalR service URL
 	['TestHub'],                      // array of hubs to be supported in the connection
     2,                                //optional: retry timeout in seconds (default: 10)
     true                              //optional: doNotStart default false
