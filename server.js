@@ -1,13 +1,15 @@
 var http = require('http');
+var history = {};
 
 http.createServer(function (req, res) {
-    
-    res.writeHead(200, { 'Content-Type': 'text/html' });
-    res.end('Hello from Poker Node Server... :)');
-    
+    handleRequest(req, res);
+
 }).listen(process.env.PORT || 8080);
 
-
+function handleRequest(req, res) {
+    res.writeHead(200, { 'Content-Type': 'text/html' });
+    res.end('handleRequest: ' + req.method);
+}
 
 // //# signalr-client
 // //https://github.com/mwwhited/signalr-client-nodejs/tree/master/WhitedUS.SignalR/WhitedUS.signalR
@@ -98,7 +100,7 @@ http.createServer(function (req, res) {
 // //Handle Authentication
 // client.serviceHandlers.onUnauthorized = function (res) {
 //     console.log("Websocket onUnauthorized:");
-    
+
 //     //Do your Login Request
 //     var location = res.headers.location;
 //     var result = http.get(location, function (loginResult) {
