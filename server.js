@@ -2,7 +2,7 @@ var http = require('http');
 var qs = require('querystring');
 
 var maxHistory = 60;
-var port = 8089;
+var port = 8080;
 
 var history = {
     router: [
@@ -23,18 +23,21 @@ function startHTTPServer() {
 
 function handleRequest(req, res) {
     if (req.method === "POST") {
-        var body = "";
+        var queryData = "";
         req.on('data', function (data) {
-            body += data;
-            if (body.length > 1e6) {
+            queryData += data;
+            if (queryData.length > 1e6) {
+                queryData = "";
+                res.writeHead(413, { 'Content-Type': 'text/plain' }).end();
                 req.connection.destroy();
             }
         });
         req.on('end', function () {
-            var post = qs.parse(body);
-            storeLatencyTest(post);
-            res.writeHead(200, { 'Content-Type': 'text/html' });
-            res.end();
+            var post = qs.parse(queryData);
+            if (validatePost(post)) {
+                storeLatencyTest(post);
+            }
+            res.writeHead(200, { 'Content-Type': 'text/plain' }).end();
         })
     }
     else {
@@ -45,7 +48,7 @@ function handleRequest(req, res) {
                 break;
             case "/routerReport":
                 res.writeHead(200, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify(history.lobby));
+                res.end(JSON.stringify(history.router));
                 break;
             default:
                 showDashboard(req, res);
@@ -53,20 +56,32 @@ function handleRequest(req, res) {
     }
 }
 
+function validatePost(post) {
+    var nonInts = new RegExp(/[^0-9]/g);
+    if (
+        post.servername && typeof post.servername === "string"
+        && post.connectionname && typeof post.connectionname === "string"
+        && post.latency && typeof post.latency === "string" && !nonInts.test(post.latency)
+    ) {
+        return true;
+
+    }
+    return false;
+}
+
 function storeLatencyTest(post) {
     var hours = new Date().getHours();
     var minutes = new Date().getMinutes();
     hours = (hours < 10) ? "0" + hours.toString() : hours.toString();
     minutes = (minutes < 10) ? "0" + minutes.toString() : minutes.toString();
-    var body = {
-        servername: (Math.floor(Math.random() * 2) === 0) ? "uk" : "usa",
-        connectionname: (Math.floor(Math.random() * 2) === 0) ? "router" : "lobby",
-        latency: Math.floor(Math.random() * 500),
-        timestamp: hours + ":" + minutes
-    };
-    console.log(body);
-    updatehistory(body);
-    console.log(history);
+    post["timestamp"] = hours + ":" + minutes;
+    // var post = {
+    //     servername: (Math.floor(Math.random() * 2) === 0) ? "uk" : "usa",
+    //     connectionname: (Math.floor(Math.random() * 2) === 0) ? "router" : "lobby",
+    //     latency: Math.floor(Math.random() * 500),
+    //     timestamp: hours + ":" + minutes
+    // };
+    updatehistory(post);
 }
 
 function updatehistory(body) {
