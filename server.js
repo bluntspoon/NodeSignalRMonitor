@@ -17,6 +17,9 @@ startHTTPServer();
 
 function startHTTPServer() {
     http.createServer(function (req, res) {
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.setHeader('Access-Control-Request-Method', '*');
+        res.setHeader('Access-Control-Allow-Headers', '*');
         handleRequest(req, res);
     }).listen(process.env.PORT || port);
 }
@@ -28,16 +31,20 @@ function handleRequest(req, res) {
             queryData += data;
             if (queryData.length > 1e6) {
                 queryData = "";
-                res.writeHead(413, { 'Content-Type': 'text/plain' }).end();
+                res.writeHead(413, { 'Content-Type': 'text/plain' });
+                res.end();
                 req.connection.destroy();
             }
         });
         req.on('end', function () {
             var post = qs.parse(queryData);
             if (validatePost(post)) {
+                post.servername = post.servername.toLowerCase();
+                post.connectionname = post.connectionname.toLowerCase();
                 storeLatencyTest(post);
             }
-            res.writeHead(200, { 'Content-Type': 'text/plain' }).end();
+            res.writeHead(200, { 'Content-Type': 'text/plain' });
+            res.end();
         })
     }
     else {
@@ -63,6 +70,7 @@ function validatePost(post) {
         && post.connectionname && typeof post.connectionname === "string"
         && post.latency && typeof post.latency === "string" && !nonInts.test(post.latency)
     ) {
+        console.log(post.servername);
         return true;
 
     }
