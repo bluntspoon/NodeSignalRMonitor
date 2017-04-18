@@ -2,7 +2,7 @@ var http = require('http');
 var qs = require('querystring');
 
 var maxHistory = 60;
-var port = 8080;
+var port = 80;
 
 var history = {
     router: [
