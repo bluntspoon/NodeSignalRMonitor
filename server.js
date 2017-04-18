@@ -1,164 +1,145 @@
 var http = require('http');
-var history = {};
+var qs = require('querystring');
 
-http.createServer(function (req, res) {
-    handleRequest(req, res);
+var maxHistory = 60;
+var port = 80;
 
-}).listen(process.env.PORT || 8080);
+var history = {
+    router: [
+        ["Item"]
+    ],
+    lobby: [
+        ["Item"]
+    ]
+};
 
-function handleRequest(req, res) {
-    res.writeHead(200, { 'Content-Type': 'text/html' });
-    res.end('handleRequest: ' + req.method);
+startHTTPServer();
+
+function startHTTPServer() {
+    http.createServer(function (req, res) {
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.setHeader('Access-Control-Request-Method', '*');
+        res.setHeader('Access-Control-Allow-Headers', '*');
+        handleRequest(req, res);
+    }).listen(process.env.PORT || port);
 }
 
-// //# signalr-client
-// //https://github.com/mwwhited/signalr-client-nodejs/tree/master/WhitedUS.SignalR/WhitedUS.signalR
-// //By: [Matthew Whited](mailto:matt@whited.us?subject=signalr-client)  (c) 2016
+function handleRequest(req, res) {
+    if (req.method === "POST") {
+        var queryData = "";
+        req.on('data', function (data) {
+            queryData += data;
+            if (queryData.length > 1e6) {
+                queryData = "";
+                res.writeHead(413, { 'Content-Type': 'text/plain' });
+                res.end();
+                req.connection.destroy();
+            }
+        });
+        req.on('end', function () {
+            var post = qs.parse(queryData);
+            if (validatePost(post)) {
+                post.servername = post.servername.toLowerCase();
+                post.connectionname = post.connectionname.toLowerCase();
+                storeLatencyTest(post);
+            }
+            res.writeHead(200, { 'Content-Type': 'text/plain' });
+            res.end();
+        })
+    }
+    else {
+        switch (req.url) {
+            case "/lobbyReport":
+                res.writeHead(200, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify(history.lobby));
+                break;
+            case "/routerReport":
+                res.writeHead(200, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify(history.router));
+                break;
+            default:
+                showDashboard(req, res);
+        }
+    }
+}
 
-// // ## Usage
+function validatePost(post) {
+    var nonInts = new RegExp(/[^0-9]/g);
+    if (
+        post.servername && typeof post.servername === "string"
+        && post.connectionname && typeof post.connectionname === "string"
+        && post.latency && typeof post.latency === "string" && !nonInts.test(post.latency)
+    ) {
+        console.log(post.servername);
+        return true;
 
-// var http = require('http');
+    }
+    return false;
+}
 
-// //### Create instance of signalR client
+function storeLatencyTest(post) {
+    var hours = new Date().getHours();
+    var minutes = new Date().getMinutes();
+    hours = (hours < 10) ? "0" + hours.toString() : hours.toString();
+    minutes = (minutes < 10) ? "0" + minutes.toString() : minutes.toString();
+    post["timestamp"] = hours + ":" + minutes;
+    // var post = {
+    //     servername: (Math.floor(Math.random() * 2) === 0) ? "uk" : "usa",
+    //     connectionname: (Math.floor(Math.random() * 2) === 0) ? "router" : "lobby",
+    //     latency: Math.floor(Math.random() * 500),
+    //     timestamp: hours + ":" + minutes
+    // };
+    updatehistory(post);
+}
 
-// //var signalR = require('signalr-client');
-// var signalR = require('./signalr.js');
-// var client  = new signalR.client(
-// 	"https://mppgs1mobile.valueactive.eu/pokerBabelFish",  //signalR service URL
-// 	['TestHub'],                      // array of hubs to be supported in the connection
-//     2,                                //optional: retry timeout in seconds (default: 10)
-//     true                              //optional: doNotStart default false
-// );
+function updatehistory(body) {
+    if (body.connectionname && body.servername && body.latency && body.timestamp) {
+        var hasTimeStamp = false;
+        if (history[body.connectionname][0].indexOf(body.servername) === -1) {
+            // new server entry
+            history[body.connectionname][0].push(body.servername);
+            for (var i = 0; i < history[body.connectionname].length; i++) {
+                if (i > 0 && history[body.connectionname][i][0] !== body.timestamp) {
+                    history[body.connectionname][i].push("0");
+                }
+                else if (history[body.connectionname][i][0] === body.timestamp) {
+                    hasTimeStamp = true;
+                    history[body.connectionname][i].push(body.latency);
+                }
+            }
+            if (!hasTimeStamp) {
+                // new timestamp entry
+                var entry = [body.timestamp];
+                for (var i = 1; i < history[body.connectionname][0].length - 1; i++) {
+                    entry.push(0);
+                }
+                entry.push(body.latency);
+                history[body.connectionname].push(entry);
+            }
+        }
+        else {
+            // existing server entry
+            var ix = history[body.connectionname][0].indexOf(body.servername);
+            for (var i = 0; i < history[body.connectionname].length; i++) {
+                if (history[body.connectionname][i][0] === body.timestamp) {
+                    hasTimeStamp = true;
+                    history[body.connectionname][i][ix] = body.latency;
+                }
+            }
+            if (!hasTimeStamp) {
+                // new timestamp entry
+                var entry = [body.timestamp];
+                for (var i = 1; i < history[body.connectionname][0].length - 1; i++) {
+                    entry.push(0);
+                }
+                entry.push(body.latency);
+                history[body.connectionname].push(entry);
+            }
+        }
+    }
+}
 
-// ////Use HTTP Proxy
-// //client.proxy = {
-// //    host: "127.0.0.1",
-// //    port: "8888"
-// //};
-
-
-// ////Add Headers to HTTP Requests (this will be added to signalR negotiation and connect
-// ////these now support a mergeable syntax
-// //client.headers['X-MyTest-Header'] = 'Hello World!';
-// //client.headers = {
-// //    'X-Other-Header-1': 'Hello World 1',
-// //    'X-Other-Header-2': 'Hello World 2'
-// //};
-// //client.headers['X-MyTest-Header'] = undefined; //Setting values to undefined will remove from from the collection
-// //client.headers = {
-// //    'X-Other-Header-1': undefined
-// //};
-// //console.log(client.headers);
-
-// ////Add Variables to the connections query string
-// //client.queryString.mVar1 = 'Hello World!';
-// //client.queryString = {
-// //    mVar2: 'Hello World!',
-// //    mVar3: 'Hello World!'
-// //};
-// //client.queryString.mVar3 = undefined; // this works just like headers
-
-
-// //### Binding callbacks from signalR hub
-
-// ////#### Method pattern
-// //client.on(
-// //	'TestHub',		// Hub Name (case insensitive)
-// //	'addmessage',	// Method Name (case insensitive)
-// //	function(name, message) { // Callback function with parameters matching call from hub
-// //		console.log("revc => " + name + ": " + message); 
-// //	});
-
-// //#### Direct pattern
-
-// //If you bind directly to the hub handlers as show here any previous
-// //	handlers for that hub will be removed!
-// client.handlers.testhub = { // hub name must be all lower case.
-// 	addmessage: function(name, message) { // method name must be all lower case, function signature should match call from hub
-// 		console.log("revc => " + name + ": " + message); 
-// 	}
-// };
-
-// //==== Optional function bindings to these names will allow for handling of these system events.
-
-// client.serviceHandlers = { //Yep, I even added the merge syntax here.
-//     bound: function() { console.log("Websocket bound"); },
-//     connectFailed: function(error) { console.log("Websocket connectFailed: ", error); },
-//     connected: function(connection) { console.log("Websocket connected"); },
-//     disconnected: function() { console.log("Websocket disconnected"); },
-//     onerror: function (error) { console.log("Websocket onerror: ", error); },
-//     messageReceived: function (message) { console.log("Websocket messageReceived: ", message); return false; },
-//     bindingError: function (error) { console.log("Websocket bindingError: ", error); },
-//     connectionLost: function (error) { console.log("Connection Lost: ", error); },
-//     reconnecting: function (retry /* { inital: true/false, count: 0} */) {
-//         console.log("Websocket Retrying: ", retry);
-//         //return retry.count >= 3; /* cancel retry true */
-//         return true; 
-//     }
-// };
-
-// //Handle Authentication
-// client.serviceHandlers.onUnauthorized = function (res) {
-//     console.log("Websocket onUnauthorized:");
-
-//     //Do your Login Request
-//     var location = res.headers.location;
-//     var result = http.get(location, function (loginResult) {
-//         //Copy "set-cookie" to "client.header.cookie" for future requests
-//         client.headers.cookie = loginResult.headers['set-cookie'];
-//     });
-// }
-
-
-// //### Calling methods on the signalR hub
-
-// //#### From the client instance
-// setInterval(function () {
-//     console.log(client.state);
-//     client.invoke(
-// 		'TestHub', // Hub Name (case insensitive)
-// 		'Send',	// Method Name (case insensitive)
-// 		'client', 'invoked from client' //additional parameters to match called signature
-// 		);
-// },2000);
-
-// //#### From the hub instance
-// setTimeout(function() {
-//     (function sendMessage() {
-//         console.log("Client State Code: ", client.state.code);
-//         console.log("Client State Description: ", client.state.desc);
-//         console.log("==>> try to get hub");
-//        	var hub = client.hub('TestHub'); // Hub Name (case insensitive)
-
-//         // if not bound set the hub will be undefined
-//        	if (!hub) {
-//        	    console.log("==>> hub not found. retry in 10 seconds");
-//        	    setTimeout(sendMessage, 10000);
-//             return;
-//        	}
-//        	console.log("==>> send message");
-//         hub.invoke(
-// 		    'Send',	// Method Name (case insensitive) 
-// 		    'hub', 'invoked from hub' //additional parameters to match called signature
-// 		    );
-
-//     })();
-// },3000);
-
-// console.log('Waiting!');
-// process.stdin.resume();
-
-// setTimeout(function() {
-//     // explicitly disconnect
-//     client.end();
-// }, 1500);
-
-// //Manually Start Client
-// client.start();
-
-// /*
-// setTimeout(function() {
-//     console.log('Bye!');
-//     process.exit();
-// }, 10000);
-// */
+function showDashboard(req, res) {
+    res.writeHead(200, { 'Content-Type': 'text/html' });
+    res.end('Hello from Poker Node Server... :)');
+}
