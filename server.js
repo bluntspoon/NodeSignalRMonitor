@@ -13,6 +13,13 @@ var history = {
     ]
 };
 
+var connectionState = {
+    router: {
+    },
+    lobby: {
+    }
+};
+
 startHTTPServer();
 
 function startHTTPServer() {
@@ -25,40 +32,68 @@ function startHTTPServer() {
 }
 
 function handleRequest(req, res) {
-    if (req.method === "POST") {
-        var queryData = "";
-        req.on('data', function (data) {
-            queryData += data;
-            if (queryData.length > 1e6) {
-                queryData = "";
-                res.writeHead(413, { 'Content-Type': 'text/plain' });
+    if (req.url === "/") {
+        if (req.method === "POST") {
+            var queryData = "";
+            req.on('data', function (data) {
+                queryData += data;
+                if (queryData.length > 1e6) {
+                    queryData = "";
+                    res.writeHead(413, { 'Content-Type': 'text/plain' });
+                    res.end();
+                    req.connection.destroy();
+                }
+            });
+            req.on('end', function () {
+                var post = qs.parse(queryData);
+                if (validatePost(post)) {
+                    post.servername = post.servername.toLowerCase();
+                    post.connectionname = post.connectionname.toLowerCase();
+                    storeLatencyTest(post);
+                }
+                res.writeHead(200, { 'Content-Type': 'text/plain' });
                 res.end();
-                req.connection.destroy();
-            }
-        });
-        req.on('end', function () {
-            var post = qs.parse(queryData);
-            if (validatePost(post)) {
-                post.servername = post.servername.toLowerCase();
-                post.connectionname = post.connectionname.toLowerCase();
-                storeLatencyTest(post);
-            }
-            res.writeHead(200, { 'Content-Type': 'text/plain' });
-            res.end();
-        })
+            })
+        }
+        else {
+            showDashboard(req, res);
+        }
+    }
+    else if (req.url === "/connectionState") {
+        if (req.method === "POST") {
+            var queryData = "";
+            req.on('data', function (data) {
+                queryData += data;
+                if (queryData.length > 1e6) {
+                    queryData = "";
+                    res.writeHead(413, { 'Content-Type': 'text/plain' });
+                    res.end();
+                    req.connection.destroy();
+                }
+            });
+            req.on('end', function () {
+                var post = qs.parse(queryData);
+                if (validateConnectionPost(post)) {
+                    post.servername = post.servername.toLowerCase();
+                    post.connectionname = post.connectionname.toLowerCase();
+                    storeConnectionStateTest(post);
+                }
+                res.writeHead(200, { 'Content-Type': 'text/plain' });
+                res.end();
+            })
+        }
+
     }
     else {
         switch (req.url) {
             case "/lobbyReport":
                 res.writeHead(200, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify(history.lobby));
+                res.end(JSON.stringify({ history: history.lobby, connectionstate: connectionState.lobby }));
                 break;
             case "/routerReport":
                 res.writeHead(200, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify(history.router));
+                res.end(JSON.stringify({ history: history.router, connectionstate: connectionState.router }));
                 break;
-            default:
-                showDashboard(req, res);
         }
     }
 }
@@ -77,15 +112,22 @@ function validatePost(post) {
     return false;
 }
 
+function validateConnectionPost(post) {
+    var nonInts = new RegExp(/[^0-9]/g);
+    if (
+        post.servername && typeof post.servername === "string"
+        && post.connectionname && typeof post.connectionname === "string"
+        && post.connectionstate && typeof post.connectionstate === "string" && (post.connectionstate === "true" || post.connectionstate === "false")
+    ) {
+        console.log(post.servername);
+        return true;
+
+    }
+    return false;
+}
+
 function storeLatencyTest(post) {
-    /*var timenow = new Date();
-    timenow.setTime( timenow.getTime() + 2*60*1000 );
-    var hours = timenow.getHours();
-    var minutes = timenow.getMinutes();
-    hours = (hours < 10) ? "0" + hours.toString() : hours.toString();
-    minutes = (minutes < 10) ? "0" + minutes.toString() : minutes.toString();
-    post["timestamp"] = hours + ":" + minutes;*/
-    var timestamp = new Date().toLocaleTimeString("en-ZA", {timeZone: "Africa/Johannesburg"});
+    var timestamp = new Date().toLocaleTimeString("en-ZA", { timeZone: "Africa/Johannesburg" });
     post["timestamp"] = timestamp.split(":").splice(0, 2).join(":");
     // var post = {
     //     servername: (Math.floor(Math.random() * 2) === 0) ? "uk" : "usa",
@@ -94,6 +136,19 @@ function storeLatencyTest(post) {
     //     timestamp: hours + ":" + minutes
     // };
     updatehistory(post);
+}
+
+function storeConnectionStateTest(post) {
+    // var post = {
+    //     servername: (Math.floor(Math.random() * 2) === 0) ? "uk" : "usa",
+    //     connectionname: (Math.floor(Math.random() * 2) === 0) ? "router" : "lobby",
+    //     connectionstate: (Math.floor(Math.random() * 2) === 0) ? "true" : "false"
+    // };
+    updateConnectionState(post);
+}
+
+function updateConnectionState(post) {
+    connectionState[post.connectionname][post.servername] = post.connectionstate;
 }
 
 function updatehistory(body) {
