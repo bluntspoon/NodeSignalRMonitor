@@ -15,11 +15,15 @@ function setupCharts() {
 }
 
 function fetchRouterData() {
-    $.getJSON(baseURL + "/routerReport", updateRouterStatus);
+    $.getJSON(baseURL + "/routerReport", updateRouterStatus).fail(function () {
+        setTimeout(fetchRouterData, 60000);
+    });
 }
 
 function fetchLobbyData() {
-    $.getJSON(baseURL + "/lobbyReport", updateLobbyStatus);
+    $.getJSON(baseURL + "/lobbyReport", updateLobbyStatus).fail(function () {
+        setTimeout(fetchLobbyData, 60000);
+    });
 }
 
 function updateRouterStatus(data) {
