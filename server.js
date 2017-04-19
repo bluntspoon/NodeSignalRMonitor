@@ -78,8 +78,10 @@ function validatePost(post) {
 }
 
 function storeLatencyTest(post) {
-    var hours = new Date().getHours();
-    var minutes = new Date().getMinutes();
+    var timenow = new Date();
+    timenow.setTime( timenow.getTime() + 2*60*1000 );
+    var hours = timenow.getHours();
+    var minutes = timenow.getMinutes();
     hours = (hours < 10) ? "0" + hours.toString() : hours.toString();
     minutes = (minutes < 10) ? "0" + minutes.toString() : minutes.toString();
     post["timestamp"] = hours + ":" + minutes;
