@@ -78,13 +78,15 @@ function validatePost(post) {
 }
 
 function storeLatencyTest(post) {
-    var timenow = new Date();
+    /*var timenow = new Date();
     timenow.setTime( timenow.getTime() + 2*60*1000 );
     var hours = timenow.getHours();
     var minutes = timenow.getMinutes();
     hours = (hours < 10) ? "0" + hours.toString() : hours.toString();
     minutes = (minutes < 10) ? "0" + minutes.toString() : minutes.toString();
-    post["timestamp"] = hours + ":" + minutes;
+    post["timestamp"] = hours + ":" + minutes;*/
+    var timestamp = new Date().toLocaleTimeString("en-ZA", {timeZone: "Africa/Johannesburg"});
+    post["timestamp"] = timestamp.split(":").splice(0, 2).join(":");
     // var post = {
     //     servername: (Math.floor(Math.random() * 2) === 0) ? "uk" : "usa",
     //     connectionname: (Math.floor(Math.random() * 2) === 0) ? "router" : "lobby",
