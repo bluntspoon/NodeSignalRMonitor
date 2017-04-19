@@ -199,7 +199,7 @@ function updatehistory(body) {
             if (!hasTimeStamp) {
                 // new timestamp entry
                 var entry = [body.timestamp];
-                for (var i = 1; i < history[body.connectionname][0].length - 1; i++) {
+                for (var i = 1; i < history[body.connectionname][0].length; i++) {
                     if (i === ix) {
                         entry.push(body.latency);
                     }
