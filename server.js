@@ -200,9 +200,14 @@ function updatehistory(body) {
                 // new timestamp entry
                 var entry = [body.timestamp];
                 for (var i = 1; i < history[body.connectionname][0].length - 1; i++) {
-                    entry.push(0);
+                    if (i === ix) {
+                        entry.push(body.latency);
+                    }
+                    else {
+                        entry.push(0);
+                    }
                 }
-                entry.push(body.latency);
+                // entry.push(body.latency);
                 history[body.connectionname].push(entry);
             }
         }
