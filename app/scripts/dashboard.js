@@ -10,11 +10,15 @@ $(document).ready(function () {
 function setupCharts() {
     lobby_chart = new google.visualization.LineChart(document.getElementById('lobby_chart'));
     router_chart = new google.visualization.LineChart(document.getElementById('router_chart'));
-    startFetchData();
+    fetchRouterData();
+    fetchLobbyData();
 }
 
-function startFetchData() {
+function fetchRouterData() {
     $.getJSON(baseURL + "/routerReport", updateRouterStatus);
+}
+
+function fetchLobbyData() {
     $.getJSON(baseURL + "/lobbyReport", updateLobbyStatus);
 }
 
@@ -29,7 +33,7 @@ function updateRouterStatus(data) {
         legend: { position: 'bottom' }
     };
     router_chart.draw(chartData, options);
-    setTimeout(updateRouterStatus, 60000);
+    setTimeout(fetchRouterData, 60000);
 }
 
 function updateLobbyStatus(data) {
@@ -43,7 +47,7 @@ function updateLobbyStatus(data) {
         legend: { position: 'bottom' }
     };
     lobby_chart.draw(chartData, options);
-    setTimeout(updateLobbyStatus, 60000);
+    setTimeout(fetchLobbyData, 60000);
 }
 
 function mangleData(data) {
