@@ -1,0 +1,95 @@
+* {
+    box-sizing: border-box;
+}
+
+html {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+    overflow-y: hidden;
+    overflow-x: hidden;
+    background: #484646;
+    color: white;
+}
+
+header {
+    font-weight: bold;
+    font-size: 2em;
+    text-align: center;
+    color: white;
+    padding-bottom: 10px;
+}
+
+.wrapper {
+    max-width: 100%;
+    margin: 0 auto;
+}
+
+.wrapper>div {
+    border: 1px solid whitesmoke;
+    border-radius: 5px;
+    background-color: black;
+    padding: 1em;
+}
+
+.wrapper {
+    display: grid;
+    height: 80%;
+    grid-template-rows: 45vh 45vh;
+    grid-template-columns: 49vw 49vw;
+    grid-gap: 5px;
+}
+
+.one {
+    grid-column: 1;
+    grid-row: 1;
+}
+
+.two {
+    grid-column: 2;
+    grid-row: 1;
+}
+
+.three {
+    grid-column: 1;
+    grid-row: 2;
+}
+
+.four {
+    grid-column: 2;
+    grid-row: 2;
+}
+
+#log {
+    overflow-y: scroll;
+    overflow-x: hidden;
+    padding: 5px;
+    color: white;
+}
+
+.wrapper>.down {
+    background: tomato !important;
+}
+
+.wrapper>.up {
+    background: mediumseagreen !important;
+}
+
+#lobby,
+#router {
+    font-weight: bold;
+    font-size: 3em;
+    text-align: center;
+}
+
+.time {
+    font-weight: normal;
+    font-size: .5em;
+    line-height: 50px;
+    position: relative;
+}
+
+.url {
+    font-weight: normal;
+    font-size: .27em;
+    line-height: 10px;
+    position: relative;
+}

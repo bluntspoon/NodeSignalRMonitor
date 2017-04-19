@@ -1,8 +1,10 @@
 var http = require('http');
 var qs = require('querystring');
+var finalhandler = require('finalhandler');
+var serveStatic = require('serve-static');
 
 var maxHistory = 60;
-var port = 80;
+var port = 8089;
 
 var history = {
     router: [
@@ -56,7 +58,7 @@ function handleRequest(req, res) {
             })
         }
         else {
-            showDashboard(req, res);
+            serveApp(req, res);
         }
     }
     else if (req.url === "/connectionState") {
@@ -88,11 +90,20 @@ function handleRequest(req, res) {
         switch (req.url) {
             case "/lobbyReport":
                 res.writeHead(200, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify({ history: history.lobby, connectionstate: connectionState.lobby }));
+                res.end(JSON.stringify({
+                    history: history.lobby,
+                    connectionstate: connectionState.lobby
+                }));
                 break;
             case "/routerReport":
                 res.writeHead(200, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify({ history: history.router, connectionstate: connectionState.router }));
+                res.end(JSON.stringify({
+                    history: history.router,
+                    connectionstate: connectionState.router
+                }));
+                break;
+            default:
+                serveApp(req, res);
                 break;
         }
     }
@@ -198,7 +209,15 @@ function updatehistory(body) {
     }
 }
 
-function showDashboard(req, res) {
-    res.writeHead(200, { 'Content-Type': 'text/html' });
-    res.end('Hello from Poker Node Server... :)');
+function serveApp(req, res) {
+    console.log(req.url);
+    if (req.url === "/") {
+        req.url = "index.htm";
+    }
+    var serve = serveStatic("./app");
+    var done = finalhandler(req, res);
+    serve(req, res, done);
+
+    // res.writeHead(200, { 'Content-Type': 'text/html' });
+    // res.end('Hello from Poker Node Server... :)');
 }
