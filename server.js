@@ -21,6 +21,7 @@ var connectionState = {
     lobby: {
     }
 };
+var connectionTimeouts = {};
 
 startHTTPServer();
 
@@ -160,6 +161,14 @@ function storeConnectionStateTest(post) {
 
 function updateConnectionState(post) {
     connectionState[post.connectionname][post.servername] = post.connectionstate;
+    if (connectionTimeouts[post.connectionname][post.servername]) {
+        clearTimeout(connectionTimeouts[post.connectionname][post.servername]);
+    }
+    if (post.connectionstate === "true") {
+        connectionTimeouts[post.connectionname][post.servername] = setTimeout(function () {
+            connectionState[post.connectionname][post.servername] = "false";
+        }, 120000)
+    }
 }
 
 function updatehistory(body) {
