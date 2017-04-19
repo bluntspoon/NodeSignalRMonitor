@@ -210,14 +210,10 @@ function updatehistory(body) {
 }
 
 function serveApp(req, res) {
-    console.log(req.url);
     if (req.url === "/") {
         req.url = "index.htm";
     }
     var serve = serveStatic("./app");
     var done = finalhandler(req, res);
     serve(req, res, done);
-
-    // res.writeHead(200, { 'Content-Type': 'text/html' });
-    // res.end('Hello from Poker Node Server... :)');
 }
