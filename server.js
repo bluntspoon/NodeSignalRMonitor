@@ -1,19 +1,13 @@
 var http = require('http');
 var qs = require('querystring');
+var fs = require("fs");
 var finalhandler = require('finalhandler');
 var serveStatic = require('serve-static');
 
 var maxHistory = 60;
 var port = 8089;
 
-var history = {
-    router: [
-        ["Item"]
-    ],
-    lobby: [
-        ["Item"]
-    ]
-};
+var history = JSON.parse(fs.readFileSync("history.json"));
 
 var connectionState = {
     router: {
@@ -220,6 +214,19 @@ function updatehistory(body) {
                 history[body.connectionname].push(entry);
             }
         }
+    }
+    cleanupHistory();
+    fs.writeFileSync("history.json", JSON.stringify(history, null, 2));
+}
+
+function cleanupHistory() {
+    if (history.router.length > 61) {
+        var numToRemove = 61 - history.router.length;
+        history.router.splice(1, numToRemove);
+    }
+    if (history.lobby.length > 61) {
+        var numToRemove = 61 - history.lobby.length;
+        history.lobby.splice(1, numToRemove);
     }
 }
 
