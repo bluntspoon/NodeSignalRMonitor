@@ -133,7 +133,7 @@ function validateConnectionPost(post) {
 }
 
 function storeLatencyTest(post) {
-    var timestamp = new Date().toLocaleTimeString("en-ZA", { timeZone: "Africa/Johannesburg" });
+    var timestamp = new Date().toLocaleTimeString("en-ZA", { timeZone: "Africa/Johannesburg", hour12: false });
     post["timestamp"] = timestamp.split(":").splice(0, 2).join(":");
     // var post = {
     //     servername: (Math.floor(Math.random() * 2) === 0) ? "uk" : "usa",
