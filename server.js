@@ -59,7 +59,7 @@ function handleRequest(req, res) {
             });
             req.on('end', function () {
                 var post = qs.parse(queryData);
-                debugPost(post)
+                debugPost(post);
                 if (validatePost(post)) {
                     post.servername = post.servername.toLowerCase();
                     post.connectionname = post.connectionname.toLowerCase();
@@ -283,8 +283,13 @@ function resetHistory() {
 }
 
 function debugPost(post) {
-    var xhr = new XMLHttpRequest();
-    xhr.open('POST', "https://mm.derivco.co.uk/hooks/e1ca9h5xufy93xf7yqwmts9f4y");
-    xhr.setRequestHeader('Content-Type', 'application/json');
-    xhr.send(JSON.stringify(post));
+    try {
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', "https://mm.derivco.co.uk/hooks/e1ca9h5xufy93xf7yqwmts9f4y");
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.send(JSON.stringify(post));
+    }
+    catch (e) {
+
+    }
 }
