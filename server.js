@@ -62,7 +62,7 @@ function handleRequest(req, res) {
                 var post = qs.parse(queryData);
                 // debugPost(post);
                 if (validatePost(post)) {
-                    post.servername = post.servername.toLowerCase();
+                    // post.servername = post.servername.toLowerCase();
                     post.connectionname = post.connectionname.toLowerCase();
                     storeLatencyTest(post);
                 }
