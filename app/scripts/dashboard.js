@@ -1,5 +1,5 @@
 var lobby_chart, router_chart;
-var baseURL = "http://localhost:8089";
+var baseURL = "http://clientdash.azurewebsites.net";
 var chart_options = {
     title: 'Latency',
     curveType: 'function',
