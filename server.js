@@ -60,7 +60,6 @@ function handleRequest(req, res) {
             });
             req.on('end', function () {
                 var post = qs.parse(queryData);
-                // debugPost(post);
                 if (validatePost(post)) {
                     // post.servername = post.servername.toLowerCase();
                     post.connectionname = post.connectionname.toLowerCase();
@@ -162,7 +161,6 @@ function storeLatencyTest(post) {
     //     latency: Math.floor(Math.random() * 500),
     //     timestamp: hours + ":" + minutes
     // };
-    debugPost(post);
     updatehistory(post);
 }
 
