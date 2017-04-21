@@ -18,78 +18,23 @@ header {
     padding-bottom: 10px;
 }
 
-.wrapper {
-    max-width: 100%;
-    margin: 0 auto;
-}
-
-.wrapper>div {
-    border: 1px solid whitesmoke;
-    border-radius: 5px;
+.grid-block {
+    border: 1px solid #b3b5b7;
+    padding: 2%;
+    margin-left: 2%;
+    margin-right: 2%;
     background-color: black;
-    padding: 1em;
+    border-radius: 10px;
+    display: inline-block;
+    width: 45%;
+    min-width: 400px;
+    height: 45%;
+    min-height: 316px;
+    overflow-x: auto;
 }
 
-.wrapper {
-    display: grid;
-    height: 80%;
-    grid-template-rows: 45vh 45vh;
-    grid-template-columns: 49vw 49vw;
-    grid-gap: 5px;
-}
-
-.one {
-    grid-column: 1;
-    grid-row: 1;
-}
-
-.two {
-    grid-column: 2;
-    grid-row: 1;
-}
-
-.three {
-    grid-column: 1;
-    grid-row: 2;
-}
-
-.four {
-    grid-column: 2;
-    grid-row: 2;
-}
-
-#log {
-    overflow-y: scroll;
-    overflow-x: hidden;
-    padding: 5px;
-    color: white;
-}
-
-.wrapper>.down {
-    background: tomato !important;
-}
-
-.wrapper>.up {
-    background: mediumseagreen !important;
-}
-
-#lobby,
-#router {
-    font-weight: bold;
-    font-size: 3em;
-    text-align: center;
-}
-
-.time {
-    font-weight: normal;
-    font-size: .5em;
-    line-height: 50px;
-    position: relative;
-}
-
-.url {
-    font-weight: normal;
-    font-size: .27em;
-    line-height: 10px;
-    position: relative;
+#router_chart,#lobby_chart {
+    height: 90%;
+    width: 90%;
+    padding-left:5%
 }
