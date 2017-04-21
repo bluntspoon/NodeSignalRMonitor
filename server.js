@@ -7,7 +7,23 @@ var serveStatic = require('serve-static');
 var maxHistory = 60;
 var port = 8089;
 
-var history = JSON.parse(fs.readFileSync("history.json"));
+if (checkExists("history.json")) {
+    var history = JSON.parse(fs.readFileSync("history.json"));
+}
+else {
+    var history = {
+        "router": [
+            [
+                "Item"
+            ]
+        ],
+        "lobby": [
+            [
+                "Item"
+            ]
+        ]
+    };
+}
 
 var connectionState = {
     router: {
@@ -212,12 +228,12 @@ function updatehistory(body) {
 }
 
 function cleanupHistory() {
-    if (history.router.length > 61) {
-        var numToRemove = 61 - history.router.length;
+    if (history.router.length > maxHistory + 1) {
+        var numToRemove = maxHistory + 1 - history.router.length;
         history.router.splice(1, numToRemove);
     }
-    if (history.lobby.length > 61) {
-        var numToRemove = 61 - history.lobby.length;
+    if (history.lobby.length > maxHistory + 1) {
+        var numToRemove = maxHistory + 1 - history.lobby.length;
         history.lobby.splice(1, numToRemove);
     }
 }
@@ -229,4 +245,19 @@ function serveApp(req, res) {
     var serve = serveStatic("./app");
     var done = finalhandler(req, res);
     serve(req, res, done);
+}
+
+function checkExists(path) {
+    try {
+        stats = fs.lstatSync(path);
+        if (stats.isFile()) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+    catch (e) {
+        return false;
+    }
 }
