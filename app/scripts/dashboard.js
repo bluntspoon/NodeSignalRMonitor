@@ -1,6 +1,15 @@
 var lobby_chart, router_chart;
-
 var baseURL = "http://clientdash.azurewebsites.net";
+var chart_options = {
+    title: 'Latency',
+    curveType: 'function',
+    legend: { position: 'bottom' },
+    vAxis: {
+        baseline: 200,
+        baselineColor: "red"
+    }
+};
+var maxLabels = 8;
 
 $(document).ready(function () {
     google.charts.load('current', { 'packages': ['corechart'] });
@@ -29,14 +38,10 @@ function fetchLobbyData() {
 function updateRouterStatus(data) {
     data.history = mangleData(data);
     if (data.history) {
-        var chartData = google.visualization.arrayToDataTable(data.history);
+        var chartData = google.visualization.arrayToDataTable(data.history, false);
+        chart_options["hAxis"] = { "showTextEvery": Math.ceil(data.history.length / maxLabels) };
     }
-    var options = {
-        title: 'Latency',
-        curveType: 'function',
-        legend: { position: 'bottom' }
-    };
-    router_chart.draw(chartData, options);
+    router_chart.draw(chartData, chart_options);
     setTimeout(fetchRouterData, 60000);
 }
 
@@ -44,13 +49,9 @@ function updateLobbyStatus(data) {
     data.history = mangleData(data);
     if (data.history) {
         var chartData = google.visualization.arrayToDataTable(data.history);
+        chart_options["hAxis"] = { "showTextEvery": Math.ceil(data.history.length / maxLabels) };
     }
-    var options = {
-        title: 'Latency',
-        curveType: 'function',
-        legend: { position: 'bottom' }
-    };
-    lobby_chart.draw(chartData, options);
+    lobby_chart.draw(chartData, chart_options);
     setTimeout(fetchLobbyData, 60000);
 }
 
