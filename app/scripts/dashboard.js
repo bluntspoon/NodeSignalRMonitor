@@ -5,7 +5,7 @@ var chart_options = {
     curveType: 'function',
     legend: { position: 'bottom' },
     vAxis: {
-        baseline: 200,
+        baseline: 100,
         baselineColor: "red"
     }
 };
