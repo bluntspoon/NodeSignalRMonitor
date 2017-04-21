@@ -132,7 +132,7 @@ function validatePost(post) {
     if (
         post.servername && typeof post.servername === "string"
         && post.connectionname && typeof post.connectionname === "string"
-        && post.latency && typeof post.latency === "string" && !nonInts.test(post.latency)
+        && post.latency && typeof post.latency === "string" //&& !nonInts.test(post.latency)
     ) {
         return true;
 
