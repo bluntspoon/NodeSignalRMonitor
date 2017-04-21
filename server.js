@@ -113,6 +113,11 @@ function handleRequest(req, res) {
                     connectionstate: connectionState.router
                 }));
                 break;
+            case "/resetHistory":
+                resetHistory();
+                res.writeHead(200, { 'Content-Type': 'text/plain' });
+                res.end("Done.");
+                break;
             default:
                 serveApp(req, res);
                 break;
@@ -261,4 +266,19 @@ function checkExists(path) {
         return false;
     }
 }
-//testing commit
+
+function resetHistory() {
+    history = {
+        "router": [
+            [
+                "Item"
+            ]
+        ],
+        "lobby": [
+            [
+                "Item"
+            ]
+        ]
+    };
+    fs.writeFileSync("history.json", JSON.stringify(history, null, 2));
+}
