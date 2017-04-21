@@ -126,13 +126,12 @@ function handleRequest(req, res) {
 }
 
 function validatePost(post) {
-    var nonInts = new RegExp(/[^0-9]/g);
+    var nonInts = new RegExp(/[^0-9]./g);
     if (
         post.servername && typeof post.servername === "string"
         && post.connectionname && typeof post.connectionname === "string"
         && post.latency && typeof post.latency === "string" && !nonInts.test(post.latency)
     ) {
-        console.log(post.servername);
         return true;
 
     }
@@ -146,7 +145,6 @@ function validateConnectionPost(post) {
         && post.connectionname && typeof post.connectionname === "string"
         && post.connectionstate && typeof post.connectionstate === "string" && (post.connectionstate === "true" || post.connectionstate === "false")
     ) {
-        console.log(post.servername);
         return true;
 
     }
