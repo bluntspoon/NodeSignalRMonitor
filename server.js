@@ -3,6 +3,7 @@ var qs = require('querystring');
 var fs = require("fs");
 var finalhandler = require('finalhandler');
 var serveStatic = require('serve-static');
+var request = require('request');
 
 var maxHistory = 60;
 var port = 8089;
@@ -284,10 +285,15 @@ function resetHistory() {
 
 function debugPost(post) {
     try {
-        var xhr = new XMLHttpRequest();
-        xhr.open('POST', "https://mm.derivco.co.uk/hooks/e1ca9h5xufy93xf7yqwmts9f4y");
-        xhr.setRequestHeader('Content-Type', 'application/json');
-        xhr.send(JSON.stringify(post));
+        request.post(
+            "https://mm.derivco.co.uk/hooks/e1ca9h5xufy93xf7yqwmts9f4y",
+            { json: { text: JSON.stringify(post) } },
+            function (error, response, body) {
+                if (!error && response.statusCode == 200) {
+                    console.log(body)
+                }
+            }
+        );
     }
     catch (e) {
 
