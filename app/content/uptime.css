@@ -21,6 +21,7 @@ header {
 .grid-block {
     border: 1px solid #b3b5b7;
     padding: 2%;
+    padding-left: 5%;
     margin-left: 2%;
     margin-right: 2%;
     background-color: black;
@@ -33,8 +34,8 @@ header {
     overflow-x: auto;
 }
 
-#router_chart,#lobby_chart {
+#router_chart,
+#lobby_chart {
     height: 90%;
     width: 90%;
-    padding-left:5%
 }
