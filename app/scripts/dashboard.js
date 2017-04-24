@@ -39,7 +39,7 @@ function updateRouterStatus(data) {
     data.history = mangleData(data);
     if (data.history) {
         var chartData = google.visualization.arrayToDataTable(data.history, false);
-        chart_options["hAxis"] = { "showTextEvery": Math.ceil(data.history.length / maxLabels) };
+        chart_options["hAxis"] = { "showTextEvery": Math.ceil(data.history.length / maxLabels), scaleType: "log" };
     }
     router_chart.draw(chartData, chart_options);
     setTimeout(fetchRouterData, 60000);
