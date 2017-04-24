@@ -2,12 +2,12 @@ var lobby_chart, router_chart;
 var baseURL = "http://clientdash.azurewebsites.net";
 var chart_options = {
     title: 'Latency',
-    curveType: 'function',
+    // curveType: 'function',
     legend: { position: 'bottom' },
     vAxis: {
-        baseline: 100,
-        baselineColor: "red",
-        scaleType: "log"
+        baseline: 1000,
+        baselineColor: "red"
+        // scaleType: "mirrorLog"
     }
 };
 var maxLabels = 8;
