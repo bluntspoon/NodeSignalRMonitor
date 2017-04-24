@@ -49,7 +49,7 @@ function updateLobbyStatus(data) {
     data.history = mangleData(data);
     if (data.history) {
         var chartData = google.visualization.arrayToDataTable(data.history);
-        chart_options["hAxis"] = { "showTextEvery": Math.ceil(data.history.length / maxLabels) };
+        chart_options["hAxis"] = { "showTextEvery": Math.ceil(data.history.length / maxLabels), scaleType: "log" };
     }
     lobby_chart.draw(chartData, chart_options);
     setTimeout(fetchLobbyData, 60000);
