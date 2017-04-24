@@ -5,7 +5,7 @@ var chart_options = {
     // curveType: 'function',
     legend: { position: 'bottom' },
     vAxis: {
-        baseline: 1000,
+        baseline: 300,
         baselineColor: "red"
         // scaleType: "mirrorLog"
     }
