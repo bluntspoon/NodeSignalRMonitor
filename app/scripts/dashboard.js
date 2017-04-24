@@ -6,7 +6,8 @@ var chart_options = {
     legend: { position: 'bottom' },
     vAxis: {
         baseline: 100,
-        baselineColor: "red"
+        baselineColor: "red",
+        scaleType: "log"
     }
 };
 var maxLabels = 8;
@@ -39,7 +40,7 @@ function updateRouterStatus(data) {
     data.history = mangleData(data);
     if (data.history) {
         var chartData = google.visualization.arrayToDataTable(data.history, false);
-        chart_options["hAxis"] = { "showTextEvery": Math.ceil(data.history.length / maxLabels), scaleType: "log" };
+        chart_options["hAxis"] = { "showTextEvery": Math.ceil(data.history.length / maxLabels) };
     }
     router_chart.draw(chartData, chart_options);
     setTimeout(fetchRouterData, 60000);
@@ -49,7 +50,7 @@ function updateLobbyStatus(data) {
     data.history = mangleData(data);
     if (data.history) {
         var chartData = google.visualization.arrayToDataTable(data.history);
-        chart_options["hAxis"] = { "showTextEvery": Math.ceil(data.history.length / maxLabels), scaleType: "log" };
+        chart_options["hAxis"] = { "showTextEvery": Math.ceil(data.history.length / maxLabels) };
     }
     lobby_chart.draw(chartData, chart_options);
     setTimeout(fetchLobbyData, 60000);
