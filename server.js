@@ -5,7 +5,7 @@ var finalhandler = require('finalhandler');
 var serveStatic = require('serve-static');
 var request = require('request');
 
-var maxHistory = 5;
+var maxHistory = 60;
 var port = 8089;
 
 if (checkExists("history.json")) {
