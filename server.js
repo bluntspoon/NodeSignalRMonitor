@@ -234,11 +234,11 @@ function updatehistory(body) {
 function cleanupHistory() {
     if (history.router.length > maxHistory + 1) {
         var numToRemove = maxHistory + 1 - history.router.length;
-        history.router.splice(1, numToRemove);
+        history.router = history.router.splice(numToRemove, history.router.length - numToRemove);
     }
     if (history.lobby.length > maxHistory + 1) {
         var numToRemove = maxHistory + 1 - history.lobby.length;
-        history.lobby.splice(1, numToRemove);
+        history.lobby = history.lobby.splice(numToRemove, history.lobby.length - numToRemove);
     }
 }
 
