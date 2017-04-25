@@ -5,14 +5,14 @@ var finalhandler = require('finalhandler');
 var serveStatic = require('serve-static');
 var request = require('request');
 
-var maxHistory = 60;
+var maxHistory = 5;
 var port = 8089;
 
 if (checkExists("history.json")) {
-    var history = JSON.parse(fs.readFileSync("history.json"));
+    var ourHistory = JSON.parse(fs.readFileSync("history.json"));
 }
 else {
-    var history = {
+    var ourHistory = {
         "router": [
             [
                 "Item"
@@ -103,14 +103,14 @@ function handleRequest(req, res) {
             case "/lobbyReport":
                 res.writeHead(200, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify({
-                    history: history.lobby,
+                    history: ourHistory.lobby,
                     connectionstate: connectionState.lobby
                 }));
                 break;
             case "/routerReport":
                 res.writeHead(200, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify({
-                    history: history.router,
+                    history: ourHistory.router,
                     connectionstate: connectionState.router
                 }));
                 break;
@@ -180,41 +180,41 @@ function updateConnectionState(post) {
 function updatehistory(body) {
     if (body.connectionname && body.servername && body.latency && body.timestamp) {
         var hasTimeStamp = false;
-        if (history[body.connectionname][0].indexOf(body.servername) === -1) {
+        if (ourHistory[body.connectionname][0].indexOf(body.servername) === -1) {
             // new server entry
-            history[body.connectionname][0].push(body.servername);
-            for (var i = 0; i < history[body.connectionname].length; i++) {
-                if (i > 0 && history[body.connectionname][i][0] !== body.timestamp) {
-                    history[body.connectionname][i].push("0");
+            ourHistory[body.connectionname][0].push(body.servername);
+            for (var i = 0; i < ourHistory[body.connectionname].length; i++) {
+                if (i > 0 && ourHistory[body.connectionname][i][0] !== body.timestamp) {
+                    ourHistory[body.connectionname][i].push("0");
                 }
-                else if (history[body.connectionname][i][0] === body.timestamp) {
+                else if (ourHistory[body.connectionname][i][0] === body.timestamp) {
                     hasTimeStamp = true;
-                    history[body.connectionname][i].push(body.latency);
+                    ourHistory[body.connectionname][i].push(body.latency);
                 }
             }
             if (!hasTimeStamp) {
                 // new timestamp entry
                 var entry = [body.timestamp];
-                for (var i = 1; i < history[body.connectionname][0].length - 1; i++) {
+                for (var i = 1; i < ourHistory[body.connectionname][0].length - 1; i++) {
                     entry.push(0);
                 }
                 entry.push(body.latency);
-                history[body.connectionname].push(entry);
+                ourHistory[body.connectionname].push(entry);
             }
         }
         else {
             // existing server entry
-            var ix = history[body.connectionname][0].indexOf(body.servername);
-            for (var i = 0; i < history[body.connectionname].length; i++) {
-                if (history[body.connectionname][i][0] === body.timestamp) {
+            var ix = ourHistory[body.connectionname][0].indexOf(body.servername);
+            for (var i = 0; i < ourHistory[body.connectionname].length; i++) {
+                if (ourHistory[body.connectionname][i][0] === body.timestamp) {
                     hasTimeStamp = true;
-                    history[body.connectionname][i][ix] = body.latency;
+                    ourHistory[body.connectionname][i][ix] = body.latency;
                 }
             }
             if (!hasTimeStamp) {
                 // new timestamp entry
                 var entry = [body.timestamp];
-                for (var i = 1; i < history[body.connectionname][0].length; i++) {
+                for (var i = 1; i < ourHistory[body.connectionname][0].length; i++) {
                     if (i === ix) {
                         entry.push(body.latency);
                     }
@@ -223,22 +223,22 @@ function updatehistory(body) {
                     }
                 }
                 // entry.push(body.latency);
-                history[body.connectionname].push(entry);
+                ourHistory[body.connectionname].push(entry);
             }
         }
     }
     cleanupHistory();
-    fs.writeFileSync("history.json", JSON.stringify(history, null, 2));
+    fs.writeFileSync("history.json", JSON.stringify(ourHistory, null, 2));
 }
 
 function cleanupHistory() {
-    if (history.router.length > maxHistory + 1) {
-        var numToRemove = maxHistory + 1 - history.router.length;
-        history.router = history.router.splice(1, numToRemove);
+    if (ourHistory.router.length > maxHistory + 1) {
+        var numToRemove = maxHistory + 1 - ourHistory.router.length;
+        ourHistory.router.splice(1, numToRemove);
     }
-    if (history.lobby.length > maxHistory + 1) {
-        var numToRemove = maxHistory + 1 - history.lobby.length;
-        history.lobby = history.lobby.splice(1, numToRemove);
+    if (ourHistory.lobby.length > maxHistory + 1) {
+        var numToRemove = maxHistory + 1 - ourHistory.lobby.length;
+        ourHistory.lobby.splice(1, numToRemove);
     }
 }
 
@@ -267,7 +267,7 @@ function checkExists(path) {
 }
 
 function resetHistory() {
-    history = {
+    ourHistory = {
         "router": [
             [
                 "Item"
@@ -279,7 +279,7 @@ function resetHistory() {
             ]
         ]
     };
-    fs.writeFileSync("history.json", JSON.stringify(history, null, 2));
+    fs.writeFileSync("history.json", JSON.stringify(ourHistory, null, 2));
 }
 
 function debugPost(post) {
