@@ -237,7 +237,7 @@ function cleanupHistory() {
         ourHistory.router.splice(1, numToRemove);
     }
     if (ourHistory.lobby.length > maxHistory + 1) {
-        var numToRemove = ourHistory.router.length - (maxHistory + 1);
+        var numToRemove = ourHistory.lobby.length - (maxHistory + 1);
         ourHistory.lobby.splice(1, numToRemove);
     }
 }
