@@ -34,6 +34,22 @@ header {
     overflow-x: auto;
 }
 
+.grid-block-full {
+    border: 1px solid #b3b5b7;
+    padding: 2%;
+    padding-left: 5%;
+    margin-left: 2%;
+    margin-right: 2%;
+    background-color: black;
+    border-radius: 10px;
+    display: inline-block;
+    width: 95%;
+    min-width: 400px;
+    height: 45%;
+    min-height: 316px;
+    overflow-x: auto;
+}
+
 #router_chart,
 #lobby_chart {
     height: 90%;

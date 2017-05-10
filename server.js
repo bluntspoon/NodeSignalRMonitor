@@ -79,7 +79,7 @@ function handleRequest(req, res) {
                 }
                 res.writeHead(200, { 'Content-Type': 'text/plain' });
                 res.end();
-            })
+            });
         }
         else {
             serveApp(req, res);
@@ -102,10 +102,7 @@ function handleRequest(req, res) {
                 storeSpecialHistory(post);
                 res.writeHead(200, { 'Content-Type': 'text/plain' });
                 res.end();
-            })
-        }
-        else {
-            serveApp(req, res);
+            });
         }
     }
     else if (req.url === "/connectionState") {
@@ -157,7 +154,16 @@ function handleRequest(req, res) {
                 break;
             case "/resetHistory":
                 resetHistory();
-                res.writeHead(200, { 'Content-Type': 'text/plain' });
+                res.writeHead(307, {
+                    'Location': '/'
+                });
+                res.end("Done.");
+                break;
+            case "/resetSpecialHistory":
+                resetSpecialHistory();
+                res.writeHead(307, {
+                    'Location': '/'
+                });
                 res.end("Done.");
                 break;
             default:
@@ -208,10 +214,7 @@ function storeLatencyTest(post) {
 function storeSpecialHistory(post) {
     // var post = {
     //     id: "string",    
-    //     Lobby: 100,    
-    //     Table: 100,    
-    //     Origami: 100,    
-    //     Webhost: 100    
+    //     Lobby: 100
     // };
     updateSpecialHistory(post);
 }
@@ -293,7 +296,7 @@ function updateSpecialHistory(body) {
         }
         var newEntry = [];
         for (var entry in body) {
-            if (entry !== body.id && specialHistory[0].indexOf(entry) === -1) {
+            if (entry !== "id" && specialHistory[0].indexOf(entry) === -1) {
                 specialHistory[0].push(entry);
             }
             newEntry.push(body[entry]);

@@ -20,8 +20,10 @@ $(document).ready(function () {
 function setupCharts() {
     lobby_chart = new google.visualization.LineChart(document.getElementById('lobby_chart'));
     router_chart = new google.visualization.LineChart(document.getElementById('router_chart'));
+    special_chart = new google.visualization.LineChart(document.getElementById('special_chart'));
     fetchRouterData();
     fetchLobbyData();
+    fetchSpecialData();
 }
 
 function fetchRouterData() {
@@ -33,6 +35,12 @@ function fetchRouterData() {
 function fetchLobbyData() {
     $.getJSON(baseURL + "/lobbyReport", updateLobbyStatus).fail(function () {
         setTimeout(fetchLobbyData, 60000);
+    });
+}
+
+function fetchSpecialData() {
+    $.getJSON(baseURL + "/specialReport", updateSpecialStatus).fail(function () {
+        setTimeout(fetchSpecialData, 60000);
     });
 }
 
@@ -54,6 +62,23 @@ function updateLobbyStatus(data) {
     }
     lobby_chart.draw(chartData, chart_options);
     setTimeout(fetchLobbyData, 60000);
+}
+
+function updateSpecialStatus(data) {
+    var special_options = {
+        title: 'Percentage',
+        legend: { position: 'bottom' },
+        vAxis: {
+            baseline: 100,
+            baselineColor: "green"
+        }
+    };
+    if (data.history) {
+        var chartData = google.visualization.arrayToDataTable(data.history);
+        special_options["hAxis"] = { "showTextEvery": Math.ceil(data.history.length / maxLabels) };
+    }
+    special_chart.draw(chartData, special_options);
+    setTimeout(fetchSpecialData, 300000);
 }
 
 function mangleData(data) {
