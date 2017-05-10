@@ -74,8 +74,20 @@ function updateSpecialStatus(data) {
         }
     };
     if (data.history) {
-        var chartData = google.visualization.arrayToDataTable(data.history);
-        special_options["hAxis"] = { "showTextEvery": Math.ceil(data.history.length / maxLabels) };
+        var newHistory = [
+            data.history[0]
+        ];
+        for (var i = 1; i < data.history.length; i++) {
+            var item = [
+                data.history[i][0]
+            ];
+            for (var j = 1; j < data.history[i].length; j++) {
+                item.push(Number(data.history[i][j]));
+            }
+            newHistory.push(item);
+        }
+        var chartData = google.visualization.arrayToDataTable(newHistory);
+        special_options["hAxis"] = { "showTextEvery": Math.ceil(newHistory.length / maxLabels) };
     }
     special_chart.draw(chartData, special_options);
     setTimeout(fetchSpecialData, 300000);
