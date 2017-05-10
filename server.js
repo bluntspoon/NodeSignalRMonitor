@@ -6,6 +6,7 @@ var serveStatic = require('serve-static');
 var request = require('request');
 
 var maxHistory = 60;
+var maxSpecialHistory = 60;
 var port = 8089;
 
 if (checkExists("history.json")) {
@@ -24,6 +25,17 @@ else {
             ]
         ]
     };
+}
+
+if (checkExists("specialHistory.json")) {
+    var specialHistory = JSON.parse(fs.readFileSync("specialHistory.json"));
+}
+else {
+    var specialHistory = [
+        [
+            "Item"
+        ]
+    ];
 }
 
 var connectionState = {
@@ -73,6 +85,29 @@ function handleRequest(req, res) {
             serveApp(req, res);
         }
     }
+    if (req.url === "/specialHistory") {
+        if (req.method === "POST") {
+            var queryData = "";
+            req.on('data', function (data) {
+                queryData += data;
+                if (queryData.length > 1e6) {
+                    queryData = "";
+                    res.writeHead(413, { 'Content-Type': 'text/plain' });
+                    res.end();
+                    req.connection.destroy();
+                }
+            });
+            req.on('end', function () {
+                var post = qs.parse(queryData);
+                storeSpecialHistory(post);
+                res.writeHead(200, { 'Content-Type': 'text/plain' });
+                res.end();
+            })
+        }
+        else {
+            serveApp(req, res);
+        }
+    }
     else if (req.url === "/connectionState") {
         if (req.method === "POST") {
             var queryData = "";
@@ -112,6 +147,12 @@ function handleRequest(req, res) {
                 res.end(JSON.stringify({
                     history: ourHistory.router,
                     connectionstate: connectionState.router
+                }));
+                break;
+            case "/specialReport":
+                res.writeHead(200, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({
+                    history: specialHistory
                 }));
                 break;
             case "/resetHistory":
@@ -161,7 +202,18 @@ function storeLatencyTest(post) {
     //     latency: Math.floor(Math.random() * 500),
     //     timestamp: hours + ":" + minutes
     // };
-    updatehistory(post);
+    updateHistory(post);
+}
+
+function storeSpecialHistory(post) {
+    // var post = {
+    //     id: "string",    
+    //     Lobby: 100,    
+    //     Table: 100,    
+    //     Origami: 100,    
+    //     Webhost: 100    
+    // };
+    updateSpecialHistory(post);
 }
 
 function storeConnectionStateTest(post) {
@@ -177,7 +229,7 @@ function updateConnectionState(post) {
     connectionState[post.connectionname][post.servername] = post.connectionstate;
 }
 
-function updatehistory(body) {
+function updateHistory(body) {
     if (body.connectionname && body.servername && body.latency && body.timestamp) {
         var hasTimeStamp = false;
         if (ourHistory[body.connectionname][0].indexOf(body.servername) === -1) {
@@ -231,6 +283,29 @@ function updatehistory(body) {
     fs.writeFileSync("history.json", JSON.stringify(ourHistory, null, 2));
 }
 
+function updateSpecialHistory(body) {
+    if (body.id) {
+        var hasID = false;
+        for (var i = 1; i < specialHistory.length; i++) {
+            if (specialHistory[i][0] === body.id) {
+                hasID = true;
+            }
+        }
+        var newEntry = [];
+        for (var entry in body) {
+            if (entry !== body.id && specialHistory[0].indexOf(entry) === -1) {
+                specialHistory[0].push(entry);
+            }
+            newEntry.push(body[entry]);
+        }
+        if (!hasID) {
+            specialHistory.push(newEntry);
+        }
+    }
+    cleanupSpecialHistory();
+    fs.writeFileSync("specialHistory.json", JSON.stringify(specialHistory, null, 2));
+}
+
 function cleanupHistory() {
     if (ourHistory.router.length > maxHistory + 1) {
         var numToRemove = ourHistory.router.length - (maxHistory + 1);
@@ -239,6 +314,13 @@ function cleanupHistory() {
     if (ourHistory.lobby.length > maxHistory + 1) {
         var numToRemove = ourHistory.lobby.length - (maxHistory + 1);
         ourHistory.lobby.splice(1, numToRemove);
+    }
+}
+
+function cleanupSpecialHistory() {
+    if (specialHistory.length > maxSpecialHistory + 1) {
+        var numToRemove = specialHistory.length - (maxSpecialHistory + 1);
+        specialHistory.splice(1, numToRemove);
     }
 }
 
@@ -280,6 +362,15 @@ function resetHistory() {
         ]
     };
     fs.writeFileSync("history.json", JSON.stringify(ourHistory, null, 2));
+}
+
+function resetSpecialHistory() {
+    specialHistory = [
+        [
+            "Item"
+        ]
+    ];
+    fs.writeFileSync("specialHistory.json", JSON.stringify(specialHistory, null, 2));
 }
 
 function debugPost(post) {
