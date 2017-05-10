@@ -85,7 +85,7 @@ function handleRequest(req, res) {
             serveApp(req, res);
         }
     }
-    if (req.url === "/specialHistory") {
+    else if (req.url === "/specialHistory") {
         if (req.method === "POST") {
             var queryData = "";
             req.on('data', function (data) {
