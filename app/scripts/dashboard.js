@@ -67,11 +67,7 @@ function updateLobbyStatus(data) {
 function updateSpecialStatus(data) {
     var special_options = {
         title: 'Percentage',
-        legend: { position: 'bottom' },
-        vAxis: {
-            baseline: 100,
-            baselineColor: "green"
-        }
+        legend: { position: 'bottom' }
     };
     if (data.history) {
         var newHistory = [
