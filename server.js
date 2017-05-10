@@ -305,6 +305,23 @@ function updateSpecialHistory(body) {
             specialHistory.push(newEntry);
         }
     }
+    //compare to previous number
+    if (specialHistory.length > 2) {
+        var names = specialHistory[0];
+        var current = specialHistory[specialHistory.length - 1];
+        var previous = specialHistory[specialHistory.length - 2];
+
+        for (var i = 1; i < names.length; i++) {
+            if (current[i] < previous[i]) {
+                request.post(
+                    'https://mm.derivco.co.uk/hooks/e1ca9h5xufy93xf7yqwmts9f4y',
+                    { json: { text: names[i] + "dropped from " + previous[i] + " to " + current[i] + " in build " + current[0] } },
+                    function (error, response, body) {
+                    }
+                );
+            }
+        }
+    }
     cleanupSpecialHistory();
     fs.writeFileSync("specialHistory.json", JSON.stringify(specialHistory, null, 2));
 }
