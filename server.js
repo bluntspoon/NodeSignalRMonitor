@@ -314,8 +314,8 @@ function updateSpecialHistory(body) {
         for (var i = 1; i < names.length; i++) {
             if (current[i] < previous[i]) {
                 request.post(
-                    'https://mm.derivco.co.uk/hooks/e1ca9h5xufy93xf7yqwmts9f4y',
-                    { json: { text: names[i] + "dropped from " + previous[i] + " to " + current[i] + " in build " + current[0] } },
+                    'https://mm.derivco.co.uk/hooks/gtch6u3bjina8g9y5hn115ikge',
+                    { json: { text: names[i] + " dropped from " + previous[i] + " to " + current[i] + " in build " + current[0] } },
                     function (error, response, body) {
                     }
                 );
