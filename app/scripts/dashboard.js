@@ -8,7 +8,8 @@ var chart_options = {
         baseline: 300,
         baselineColor: "red"
         // scaleType: "mirrorLog"
-    }
+    },
+    explorer: {}
 };
 var maxLabels = 8;
 
@@ -67,7 +68,8 @@ function updateLobbyStatus(data) {
 function updateSpecialStatus(data) {
     var special_options = {
         title: 'Percentage',
-        legend: { position: 'bottom' }
+        legend: { position: 'bottom' },
+        explorer: {}
     };
     if (data.history) {
         var newHistory = [
