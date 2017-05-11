@@ -322,7 +322,7 @@ function updateSpecialHistory(body) {
             }
         }
     }
-    cleanupSpecialHistory();
+    // cleanupSpecialHistory();
     fs.writeFileSync("specialHistory.json", JSON.stringify(specialHistory, null, 2));
 }
 
