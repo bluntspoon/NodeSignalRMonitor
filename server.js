@@ -315,7 +315,7 @@ function updateSpecialHistory(body) {
             if (current[i] < previous[i]) {
                 request.post(
                     'https://mm.derivco.co.uk/hooks/gtch6u3bjina8g9y5hn115ikge',
-                    { json: { text: names[i] + " coverage dropped from " + previous[i] + " to " + current[i] + " in build " + current[0] } },
+                    { json: { text: ":warning: " + names[i] + " coverage dropped from " + previous[i] + " to " + current[i] + " in build " + current[0] } },
                     function (error, response, body) {
                     }
                 );
