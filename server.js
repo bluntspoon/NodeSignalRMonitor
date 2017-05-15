@@ -311,7 +311,6 @@ function updateSpecialHistory(body) {
             }
         }
         if (!hasID) {
-            debugPost(newEntry);
             specialHistory.push(newEntry);
         }
     }
