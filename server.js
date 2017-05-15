@@ -304,13 +304,14 @@ function updateSpecialHistory(body) {
                 specialHistory[0].push(entry);
             }
             if (entry === "id") {
-                newEntry.push(body[thisDate]);
+                newEntry.push(thisDate);
             }
             else {
                 newEntry.push(body[entry]);
             }
         }
         if (!hasID) {
+            debugPost(newEntry);
             specialHistory.push(newEntry);
         }
     }
