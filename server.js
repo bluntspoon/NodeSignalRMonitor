@@ -303,7 +303,7 @@ function updateSpecialHistory(body) {
             if (entry !== "id" && specialHistory[0].indexOf(entry) === -1) {
                 specialHistory[0].push(entry);
             }
-            if (entry === " id") {
+            if (entry === "id") {
                 newEntry.push(body[thisDate]);
             }
             else {
