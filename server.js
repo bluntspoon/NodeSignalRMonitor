@@ -287,6 +287,10 @@ function updateHistory(body) {
 }
 
 function updateSpecialHistory(body) {
+    var thisDate = new Date();
+    var nowDate = thisDate.toLocaleDateString("en-za");
+    var nowTime = thisDate.toLocaleTimeString("en-za");
+    thisDate = [nowDate, nowTime].join(" ");
     if (body.id) {
         var hasID = false;
         for (var i = 1; i < specialHistory.length; i++) {
@@ -299,7 +303,12 @@ function updateSpecialHistory(body) {
             if (entry !== "id" && specialHistory[0].indexOf(entry) === -1) {
                 specialHistory[0].push(entry);
             }
-            newEntry.push(body[entry]);
+            if (entry === " id") {
+                newEntry.push(body[thisDate]);
+            }
+            else {
+                newEntry.push(body[entry]);
+            }
         }
         if (!hasID) {
             specialHistory.push(newEntry);
