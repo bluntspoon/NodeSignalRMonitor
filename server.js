@@ -287,7 +287,7 @@ function updateHistory(body) {
 }
 
 function updateSpecialHistory(body) {
-    var thisDate = new Date();
+    var thisDate = timeInOffset(2);
     var nowDate = thisDate.toLocaleDateString("en-za");
     var nowTime = thisDate.toLocaleTimeString("en-za");
     thisDate = [nowDate, nowTime].join(" ");
@@ -418,4 +418,11 @@ function debugPost(post) {
     catch (e) {
 
     }
+}
+
+function timeInOffset(offset) {
+    var d = new Date();
+    var utc = d.getTime() + (d.getTimezoneOffset() * 60000);
+    var nd = new Date(utc + (3600000 * offset));
+    return nd;
 }
