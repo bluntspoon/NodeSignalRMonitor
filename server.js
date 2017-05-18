@@ -322,12 +322,12 @@ function updateSpecialHistory(body) {
 
         for (var i = 1; i < names.length; i++) {
             if (current[i] < previous[i]) {
-                request.post(
-                    'https://mm.derivco.co.uk/hooks/gtch6u3bjina8g9y5hn115ikge',
-                    { json: { text: ":warning: " + names[i] + " coverage dropped from " + previous[i] + " to " + current[i] + " in build " + current[0] } },
-                    function (error, response, body) {
-                    }
-                );
+                // request.post(
+                //     'https://mm.derivco.co.uk/hooks/gtch6u3bjina8g9y5hn115ikge',
+                //     { json: { text: ":warning: " + names[i] + " coverage dropped from " + previous[i] + " to " + current[i] + " in build " + body.id } },
+                //     function (error, response, body) {
+                //     }
+                // );
             }
         }
     }
