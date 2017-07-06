@@ -82,7 +82,9 @@ function updateSpecialStatus(data) {
             for (var j = 1; j < data.history[i].length; j++) {
                 item.push(Number(data.history[i][j]));
             }
-            newHistory.push(item);
+            if (item.length === newHistory[0].length) {
+                newHistory.push(item);
+            }
         }
         var chartData = google.visualization.arrayToDataTable(newHistory);
         special_options["hAxis"] = { "showTextEvery": Math.ceil(newHistory.length / maxLabels) };
