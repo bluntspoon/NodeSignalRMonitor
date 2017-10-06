@@ -75,7 +75,8 @@ function updateSpecialStatus(data) {
         var newHistory = [
             data.history[0]
         ];
-        for (var i = 1; i < data.history.length; i++) {
+        var start = data.history.length > 51 ? data.history.length - 50 : 0;
+        for (var i = start; i < data.history.length; i++) {
             var item = [
                 data.history[i][0]
             ];
