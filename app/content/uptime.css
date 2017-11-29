@@ -50,6 +50,21 @@ header {
     overflow-x: auto;
 }
 
+.automationRow {
+    height: 25%;
+    width: 90%;
+    display: block;
+    background-color: green;
+    margin-bottom: 3%;
+}
+
+.automationSpan {
+    color: white;
+    font-size: 4em;
+    font-weight: bold;
+    text-align: center;
+}
+
 #router_chart,
 #lobby_chart {
     height: 90%;
