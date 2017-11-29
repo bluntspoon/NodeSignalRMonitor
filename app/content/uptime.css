@@ -60,9 +60,12 @@ header {
 
 .automationSpan {
     color: white;
-    font-size: 4em;
+    font-size: 3em;
     font-weight: bold;
     text-align: center;
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
 }
 
 #router_chart,
