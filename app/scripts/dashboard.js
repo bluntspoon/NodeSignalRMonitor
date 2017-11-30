@@ -1,5 +1,4 @@
 var lobby_chart, router_chart;
-var baseURL = "http://clientdash.azurewebsites.net";
 var chart_options = {
     title: 'Latency',
     // curveType: 'function',
@@ -11,12 +10,26 @@ var chart_options = {
     },
     explorer: {}
 };
-var maxLabels = 8;
 
-$(document).ready(function () {
+$(document).ready(() => {
+    loadScript("scripts/options.js", continueLoading);
+});
+
+function continueLoading() {
     google.charts.load('current', { 'packages': ['corechart'] });
     google.charts.setOnLoadCallback(setupCharts);
-});
+}
+
+
+function loadScript(url, callback) {
+    var head = document.getElementsByTagName('head')[0];
+    var script = document.createElement('script');
+    script.type = 'text/javascript';
+    script.src = url;
+    script.onreadystatechange = callback;
+    script.onload = callback;
+    head.appendChild(script);
+}
 
 function setupCharts() {
     lobby_chart = new google.visualization.LineChart(document.getElementById('lobby_chart'));
@@ -106,4 +119,8 @@ function mangleData(data) {
         newArr.push(tmpArr);
     }
     return newArr;
+}
+
+function fetchAutomationData() {
+
 }
