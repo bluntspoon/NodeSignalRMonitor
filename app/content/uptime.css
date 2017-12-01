@@ -78,3 +78,15 @@ header {
     height: 90%;
     width: 95%;
 }
+
+.green {
+    background-color: green;
+}
+
+.red {
+    background-color: red;
+}
+
+.orange {
+    background-color: orange;
+}

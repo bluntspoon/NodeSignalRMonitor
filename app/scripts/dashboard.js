@@ -18,6 +18,7 @@ $(document).ready(() => {
 function continueLoading() {
     google.charts.load('current', { 'packages': ['corechart'] });
     google.charts.setOnLoadCallback(setupCharts);
+    fetchAutomationData();
 }
 
 
@@ -65,7 +66,7 @@ function updateRouterStatus(data) {
         chart_options["hAxis"] = { "showTextEvery": Math.ceil(data.history.length / maxLabels) };
     }
     router_chart.draw(chartData, chart_options);
-    setTimeout(fetchRouterData, 60000);
+    setTimeout(fetchRouterData, standardDataInterval * 1000);
 }
 
 function updateLobbyStatus(data) {
@@ -75,7 +76,7 @@ function updateLobbyStatus(data) {
         chart_options["hAxis"] = { "showTextEvery": Math.ceil(data.history.length / maxLabels) };
     }
     lobby_chart.draw(chartData, chart_options);
-    setTimeout(fetchLobbyData, 60000);
+    setTimeout(fetchLobbyData, standardDataInterval * 1000);
 }
 
 function updateSpecialStatus(data) {
@@ -104,7 +105,7 @@ function updateSpecialStatus(data) {
         special_options["hAxis"] = { "showTextEvery": Math.ceil(newHistory.length / maxLabels) };
     }
     special_chart.draw(chartData, special_options);
-    setTimeout(fetchSpecialData, 300000);
+    setTimeout(fetchSpecialData, specialDataInterval * 1000);
 }
 
 function mangleData(data) {
@@ -121,6 +122,67 @@ function mangleData(data) {
     return newArr;
 }
 
-function fetchAutomationData() {
+function updateAutomationData(data, name) {
+    if (data && data.Environments) {
+        var rowData = data.Environments[0];
+        console.log(rowData.Passed)
+        var div = document.getElementById(name + "Row");
+        var span = div.children[0].children[0];
+        var newdata = name + ": " + rowData.Passed + "/" + rowData.Total;
+        span.innerText = newdata;
+        setRowColor(rowData.Passed, rowData.Total, div);
+    }
+}
 
+function setRowColor(pass, total, div) {
+    if (pass < total) {
+        div.classList.remove("orange");
+        div.classList.remove("green");
+        div.classList.add("red");
+    }
+
+    else if (pass / total > 0.9) {
+        div.classList.remove("red");
+        div.classList.remove("green");
+        div.classList.add("orange");
+    }
+    else {
+        div.classList.remove("orange");
+        div.classList.remove("red");
+        div.classList.add("green");
+    }
+}
+
+function doCheck(name, url) {
+    $.ajax({
+        url: url,
+        type: "GET",
+        headers: autoHeaders,
+        crossDomain: true
+    }).done((data) => {
+        try {
+            updateAutomationData(data, name);
+        }
+        catch (e) {
+            // do nothing
+        }
+    })
+        .always(() => {
+            console.log(name, url);
+            queueCheck(name, url);
+        });
+}
+
+function queueCheck(name, url) {
+    setTimeout(() => {
+        doCheck(name, url);
+    }, automationIntervalSeconds * 1000);
+}
+
+function fetchAutomationData() {
+    for (var i = 0; i < autoPerms.length; i++) {
+        var name = autoPerms[i].name
+        var url = autoPerms[i].url
+        doCheck(name, url);
+    }
 }
