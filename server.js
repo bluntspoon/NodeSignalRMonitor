@@ -12,6 +12,9 @@ var port = 8089;
 if (checkExists("history.json")) {
     var ourHistory = JSON.parse(fs.readFileSync("history.json"));
 }
+if (checkExists("settings.json")) {
+    var settings = JSON.parse(fs.readFileSync("settings.json"));
+}
 else {
     var ourHistory = {
         "router": [
@@ -323,7 +326,7 @@ function updateSpecialHistory(body) {
         for (var i = 1; i < names.length; i++) {
             if (current[i] < previous[i]) {
                 // request.post(
-                //     'https://mm.derivco.co.uk/hooks/gtch6u3bjina8g9y5hn115ikge',
+                //     settings.CoverageURL,
                 //     { json: { text: ":warning: " + names[i] + " coverage dropped from " + previous[i] + " to " + current[i] + " in build " + body.id } },
                 //     function (error, response, body) {
                 //     }
@@ -405,7 +408,7 @@ function resetSpecialHistory() {
 function debugPost(post) {
     try {
         request.post(
-            "https://mm.derivco.co.uk/hooks/e1ca9h5xufy93xf7yqwmts9f4y",
+            settings.DebugURL,
             { json: { text: JSON.stringify(post) } },
             function (error, response, body) {
                 if (!error && response.statusCode == 200) {
