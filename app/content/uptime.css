@@ -58,10 +58,19 @@ header {
     margin-bottom: 3%;
 }
 
-.automationSpan {
+.automationSpan .date {
     color: white;
-    font-size: 3em;
+    font-size: 0.8em;
     font-weight: bold;
+}
+
+.automationSpan .results {
+    color: white;
+    font-size: 2em;
+    font-weight: bold;
+}
+
+.automationSpan {
     text-align: center;
     position: relative;
     top: 50%;

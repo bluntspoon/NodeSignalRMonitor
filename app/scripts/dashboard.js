@@ -128,8 +128,10 @@ function updateAutomationData(data, name) {
         console.log(rowData.Passed)
         var div = document.getElementById(name + "Row");
         var span = div.children[0].children[0];
+        var datespan = div.children[0].children[2];
         var newdata = name + ": " + rowData.Passed + "/" + rowData.Total;
         span.innerText = newdata;
+        datespan.innerText = rowData.DateCompleted;
         setRowColor(rowData.Passed, rowData.Total, div);
     }
 }
