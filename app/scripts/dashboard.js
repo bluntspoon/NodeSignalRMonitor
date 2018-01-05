@@ -136,7 +136,6 @@ function updateAutomationData(data, name) {
 }
 
 function setRowColor(pass, total, div) {
-    console.log(pass / total);
     if (pass === total){
         div.classList.remove("orange");
         div.classList.remove("red");
