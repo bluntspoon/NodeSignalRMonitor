@@ -125,7 +125,6 @@ function mangleData(data) {
 function updateAutomationData(data, name) {
     if (data && data.Environments) {
         var rowData = data.Environments[0];
-        console.log(rowData.Passed)
         var div = document.getElementById(name + "Row");
         var span = div.children[0].children[0];
         var datespan = div.children[0].children[2];
@@ -137,21 +136,21 @@ function updateAutomationData(data, name) {
 }
 
 function setRowColor(pass, total, div) {
-    if (pass / total <= 0.9) {
+    console.log(pass / total);
+    if (pass === total){
+        div.classList.remove("orange");
+        div.classList.remove("red");
+        div.classList.add("green");
+    }
+    else if (pass / total <= 0.9) {
         div.classList.remove("orange");
         div.classList.remove("green");
         div.classList.add("red");
     }
-
-    else if (pass / total > 0.9) {
+    else if (pass / total > 0.9 && pass / total !== 0.9) {
         div.classList.remove("red");
         div.classList.remove("green");
         div.classList.add("orange");
-    }
-    else {
-        div.classList.remove("orange");
-        div.classList.remove("red");
-        div.classList.add("green");
     }
 }
 
